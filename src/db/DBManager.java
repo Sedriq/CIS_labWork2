@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import sample.ExcelController;
 
 /**
  * Provides methods for work with DataBase.
@@ -42,7 +43,14 @@ public class DBManager {
 	private static final String SQL_UPDATE_USER="UPDATE public.user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
 	private static final String SQL_DELETE_USER="DELETE FROM public.user WHERE name=?";
 
+	//DEPARTMENT
+	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO public.department(name) VALUES (?)";
 
+	//SCIENCE_TYPE
+	private static final String SQL_INSERT_SCIENCE_TYPE="INSERT INTO public.science_type(name) VALUES (?)";
+
+	//SPECIALITY
+	private static final String SQL_INSERT_SPECIALITY="INSERT INTO public.speciality(name) VALUES (?)";
 	//===============================
 
 	private DBManager() {
@@ -418,8 +426,12 @@ public class DBManager {
 		ins.setName(rs.getString(Fields.NAME));
 		return ins;
 	}
+	ExcelController ex = new ExcelController();
+	public void importFromExcel() {
+		ex.importDataFromExcel();
+	}
 
-//	public void exportToExcel(int id) {
-//        exportAllReportsForXsl(id);
-//	}
+	public void exportInExcel() {
+		ex.exportDataInExcel();
+	}
 }
