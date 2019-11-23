@@ -155,13 +155,22 @@ public class MainController  {
     @FXML
     private Button exportInExcelButton;
 
+    @FXML
+    private MenuItem openExcel;
+
+    @FXML
+    private MenuItem saveExcel;
+
+    @FXML
     void initialize() {
-        importFromExcelButton.setOnAction((event -> {
+        openExcel.setOnAction((event -> {
+            System.out.println("import");
             importFromExcel();
         }));
 
-        exportInExcelButton.setOnAction((event -> {
-            importFromExcel();
+        saveExcel.setOnAction((event -> {
+            System.out.println("export");
+            exportInExcel();
         }));
     }
 
