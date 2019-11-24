@@ -1,6 +1,8 @@
 package sample;
 
 import db.DBManager;
+import db.entity.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -21,13 +23,13 @@ public class MainController  {
     @FXML
     private TextField degree;
     @FXML
-    private ComboBox DB_fieldOfKnowledge;
+    private ComboBox<ScienceType> DB_fieldOfKnowledge;
     @FXML
-    private ComboBox DB_spec;
+    private ComboBox<Specialty> DB_spec;
     @FXML
-    private ComboBox DB_eduProgram;
+    private ComboBox<String> DB_eduProgram;
     @FXML
-    private ComboBox eduForm;
+    private ComboBox<String> eduForm;
     @FXML
     private DatePicker startOfEduDate;
     @FXML
@@ -37,9 +39,9 @@ public class MainController  {
     @FXML
     private TextField dependsOn;
     @FXML
-    private ComboBox DB_department;
+    private ComboBox<Department> DB_department;
 
-    //ГРАФИК ОБУЧ ПРОЦЕССА
+    // ГРАФИК ОБУЧ ПРОЦЕССА
     @FXML
     private TableView<String> view;
     @FXML
@@ -163,6 +165,26 @@ public class MainController  {
 
     @FXML
     void initialize() {
+        // prevent table columns interaction
+        for (TableColumn<?, ?> column : view.getColumns()) {
+            column.setResizable(false);
+            column.impl_setReorderable(false);
+            column.setSortable(false);
+        }
+
+        eduForm.setItems(FXCollections.observableArrayList("Денна", "Заочна"));
+
+        DBManager dbManager = DBManager.getInstance();
+
+        DB_department.setItems(FXCollections.observableArrayList(dbManager.getAllDepartments()));
+        DB_fieldOfKnowledge
+                    .setItems(FXCollections.observableArrayList(dbManager.getAllScienceTypes()));
+        DB_spec.setItems(FXCollections.observableArrayList(dbManager.getAllSpecialties()));
+        for (Specialty specialty : DB_spec.getItems()) {
+            DB_eduProgram.getItems().add(specialty.getName().substring(
+                        specialty.getName().indexOf('\"') + 1, specialty.getName().lastIndexOf('\"')));
+        }
+
         openExcel.setOnAction((event -> {
             System.out.println("import");
             importFromExcel();
