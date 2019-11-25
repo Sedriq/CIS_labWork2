@@ -9,6 +9,7 @@ package db.entity;
 public class Department extends Entity{
 
 	private String name;
+	private long science_id;
 
 	public String getName() {
 		return name;
@@ -18,6 +19,14 @@ public class Department extends Entity{
 		this.name = name;
 	}
 
+	public long getScience_id() {
+	    return science_id;
+	}
+
+	public void setScience_id(long science_id) {
+	    this.science_id = science_id;
+	}
+	
 	@Override
 	public String toString() {
 		return getName();

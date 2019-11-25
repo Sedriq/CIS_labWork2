@@ -37,20 +37,23 @@ public class DBManager {
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM public.user WHERE name=?";
-	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM public.user WHERE id=?";
-	private static final String SQL_INSERT_USER="INSERT INTO public.user(name, email, password, authority_id) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE public.user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM public.user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO user(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM user WHERE name=?";
 
 	//DEPARTMENT
-	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO public.department(name) VALUES (?)";
+	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO department(name) VALUES (?)";
+	private static final String SQL_GET_ALL_DEPARTMENTS = "SELECT * FROM department";
 
 	//SCIENCE_TYPE
-	private static final String SQL_INSERT_SCIENCE_TYPE="INSERT INTO public.science_type(name) VALUES (?)";
+	private static final String SQL_INSERT_SCIENCE_TYPE="INSERT INTO science_type(name) VALUES (?)";
+    private static final String SQL_GET_ALL_SCIENCE_TYPES = "SELECT * FROM science_type";
 
 	//SPECIALITY
-	private static final String SQL_INSERT_SPECIALITY="INSERT INTO public.speciality(name) VALUES (?)";
+	private static final String SQL_INSERT_SPECIALITY="INSERT INTO speciality(name) VALUES (?)";
+	private static final String SQL_GET_ALL_SPECIALTIES = "SELECT * FROM specialty";
 	//===============================
 
 	private DBManager() {
@@ -277,6 +280,69 @@ public class DBManager {
 		return ins;
 	}
 	
+	public List<Department> getAllDepartments() {
+        List<Department> departments = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_DEPARTMENTS);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                departments.add(getDepartment(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return departments;
+    }
+	
+	public List<Specialty> getAllSpecialties() {
+        List<Specialty> specialties = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_SPECIALTIES);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                specialties.add(getSpecialty(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return specialties;
+    }
+	
+	public List<ScienceType> getAllScienceTypes() {
+        List<ScienceType> scienceTypes = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            con = getConnection();
+            st = con.prepareStatement(SQL_GET_ALL_SCIENCE_TYPES);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                scienceTypes.add(getScienceType(rs));
+            }
+            con.commit();
+        } catch (SQLException e) {
+            rollback(con);
+        } finally {
+            close(con, st, rs);
+        }
+        return scienceTypes;
+    }
+	
 	//========== TEACHER =============
 	
 	/**
@@ -415,6 +481,20 @@ public class DBManager {
     
     private Department getDepartment(ResultSet rs) throws SQLException {
         Department ins = new Department();
+        ins.setId(rs.getLong(Fields.ID));
+        ins.setName(rs.getString(Fields.NAME));
+        return ins;
+    }
+    
+    private Specialty getSpecialty(ResultSet rs) throws SQLException {
+        Specialty ins = new Specialty();
+        ins.setId(rs.getLong(Fields.ID));
+        ins.setName(rs.getString(Fields.NAME));
+        return ins;
+    }
+    
+    private ScienceType getScienceType(ResultSet rs) throws SQLException {
+        ScienceType ins = new ScienceType();
         ins.setId(rs.getLong(Fields.ID));
         ins.setName(rs.getString(Fields.NAME));
         return ins;
