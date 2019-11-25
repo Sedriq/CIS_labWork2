@@ -426,12 +426,13 @@ public class DBManager {
 		ins.setName(rs.getString(Fields.NAME));
 		return ins;
 	}
+
 	ExcelController ex = new ExcelController();
-	public void importFromExcel() {
+	public void importFromExcel() throws IOException, SQLException {
 		ex.importDataFromExcel();
 	}
 
-	public void exportInExcel() {
+	public void exportInExcel() throws IOException {
 		ex.exportDataInExcel();
 	}
 }

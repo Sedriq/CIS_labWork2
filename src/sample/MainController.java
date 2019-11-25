@@ -4,6 +4,9 @@ import db.DBManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 public class MainController  {
 
     @FXML
@@ -150,12 +153,6 @@ public class MainController  {
     private TableColumn<String, String> tw52;
 
     @FXML
-    private Button importFromExcelButton;
-
-    @FXML
-    private Button exportInExcelButton;
-
-    @FXML
     private MenuItem openExcel;
 
     @FXML
@@ -164,22 +161,28 @@ public class MainController  {
     @FXML
     void initialize() {
         openExcel.setOnAction((event -> {
-            System.out.println("import");
-            importFromExcel();
+            try {
+                importFromExcel();
+            } catch (IOException | SQLException e) {
+                e.printStackTrace();
+            }
         }));
 
         saveExcel.setOnAction((event -> {
-            System.out.println("export");
-            exportInExcel();
+            try {
+                exportInExcel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }));
     }
 
-    private void importFromExcel() {
+    private void importFromExcel() throws IOException, SQLException {
         DBManager manager = DBManager.getInstance();
         manager.importFromExcel();
     }
 
-    private void exportInExcel() {
+    private void exportInExcel() throws IOException {
         DBManager manager = DBManager.getInstance();
         manager.exportInExcel();
     }
