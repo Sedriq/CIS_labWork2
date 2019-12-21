@@ -37,11 +37,11 @@ public class DBManager {
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
-	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
-	private static final String SQL_INSERT_USER="INSERT INTO user(name, email, password, authority_id) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM \"user\" WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM \"user\" WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO \"user\"(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE \"user\" SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM \"user\" WHERE name=?";
 
 	//DEPARTMENT
 	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO department(name) VALUES (?)";
@@ -57,7 +57,7 @@ public class DBManager {
 
 	//SPECIALITY
 	private static final String SQL_INSERT_SPECIALITY="INSERT INTO speciality(name) VALUES (?)";
-	private static final String SQL_GET_ALL_SPECIALTIES = "SELECT * FROM specialty";
+	private static final String SQL_GET_ALL_SPECIALTIES = "SELECT * FROM speciality";
 	//===============================
 
 	private DBManager() {

@@ -11,6 +11,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ExcelController {
     String data[] = null;
@@ -23,24 +25,13 @@ public class ExcelController {
     }
 
     private void saveFile() throws IOException {
-//        Stage stage = new Stage();
-//        FileChooser fileChooser = new FileChooser();
-//        fileChooser.setTitle("Open Resource File");
-//        fileChooser.setInitialFileName("Report");
-//        fileChooser.getExtensionFilters().addAll(
-//                new FileChooser.ExtensionFilter("*.xls", "*.xls"),
-//                new FileChooser.ExtensionFilter("*.xlsx", "*.xlsx")
-//        );
-//        File selectedFile = fileChooser.showSaveDialog(stage);
-//        if (selectedFile != null) {
         if (data != null) {
             FileInputStream fis = new FileInputStream("./Title.xls");
-            //String extension = fileExtension(selectedFile);
 
-//            if (extension.equals("xls")) {
             HSSFWorkbook wb = new HSSFWorkbook(fis);
             HSSFSheet sheet = wb.getSheetAt(0);
             addDataInExcel(sheet);
+            addHoursInExcel(sheet);
 
             fis.close();
 
@@ -53,67 +44,7 @@ public class ExcelController {
         } else {
             alertWarning("There is nothing to save!\nPlease, open a file with data.");
         }
-//            } else {
-//                XSSFWorkbook wb = new XSSFWorkbook(fis);
-//                XSSFSheet sheet = wb.getSheetAt(0);
-//                addDataInExcel(sheet);
-//
-//                fis.close();
-//
-//                FileOutputStream outputStream = new FileOutputStream("./Title.xls");
-//                wb.write(outputStream);
-//
-//                wb.close();
-//                outputStream.close();
-//            }
-            //copyWorkBooks(fis, wb,selectedFile);
-       // }
     }
-
-//    private void copyWorkBooks(FileInputStream fis, Workbook inputWB, File selectedFile) throws IOException {
-//        int inputSheetCount = inputWB.getNumberOfSheets();
-//
-//        FileOutputStream fos = new FileOutputStream(selectedFile);
-//        Workbook outputWB = new HSSFWorkbook();
-//
-//        for(int i=0; i < inputSheetCount - 1; i++) // inputSheetCount - 1 because Title.xls has 2 sheets
-//        {
-//            Sheet inputSheet = inputWB.getSheetAt(i);
-////            String inputSheetName = inputWB.getSheetName(i);
-//            Sheet outputSheet = inputWB.createSheet("Лист1");
-//
-//            // Create and call method to copy the sheet and content in new workbook.
-//            copySheet(inputSheet, outputSheet);
-//        }
-//
-//        outputWB.write(fos);
-//        fos.close();
-//    }
-
-//    public static void copySheet(Sheet inputSheet, Sheet outputSheet) {
-//        int rowCount = inputSheet.getLastRowNum();
-//
-//        int currentRowIndex = 0;
-//        if (rowCount > 0) {
-//            Iterator<Row> rowIterator = inputSheet.iterator();
-//            while (rowIterator.hasNext()) {
-//                int currentCellIndex = 0;
-//                Row currentRow = rowIterator.next();
-//                Iterator<Cell> cellIterator = currentRow.iterator();
-//                while (cellIterator.hasNext()) {
-//                    // Creating new Row, Cell and Input value in the newly created sheet.
-//                    String cellData = cellIterator.next().toString();
-//                    if (currentCellIndex == 0)
-//                        outputSheet.createRow(currentRowIndex).createCell(currentCellIndex).setCellValue(cellData);
-//                    else
-//                        outputSheet.getRow(currentRowIndex).createCell(currentCellIndex).setCellValue(cellData);
-//
-//                    currentCellIndex++;
-//                }
-//                currentRowIndex++;
-//            }
-//        }
-//    }
 
     private void readFile() throws IOException, SQLException {
         Stage stage = new Stage();
@@ -172,6 +103,53 @@ public class ExcelController {
                 Cell cell = row.getCell(i);
                 data[j] = cell.getStringCellValue();
             }
+            rowIndex++;
+        }
+    }
+
+    private void addHoursInExcel(Sheet sheet) {
+        int rowIndex = 32, from = 0, to = 52;
+        while (rowIndex < 36) {
+            ArrayList<String> getH = new ArrayList<>();
+            ArrayList<String> getC = new ArrayList<>();
+            ArrayList<String> getK = new ArrayList<>();
+            ArrayList<String> getA = new ArrayList<>();
+
+            String[] copiedArr = Arrays.copyOfRange(data, from, to);
+
+            for (int i = from; i < to; i++) {
+                if (data[i].equals("Н"))
+                    getH.add(data[i]);
+                if (data[i].equals("С"))
+                    getC.add(data[i]);
+                if (data[i].equals("К"))
+                    getK.add(data[i]);
+                if (data[i].equals("А"))
+                    getA.add(data[i]);
+            }
+
+            int arrOfNumbers[] = {getH.size() + getC.size(), 0, 0, 0, getK.size(), 0};
+            int theoryAmount = copiedArr.length - getH.size() - getC.size() - getK.size() - getA.size();
+            Row row = sheet.getRow(rowIndex);
+
+            for (int i = 3, j = 0; i <= 18; i += 3, j++) {
+                Cell cell = row.getCell(i);
+                if (i == 3 && getA.size() > 0) {
+                    cell.setCellValue(theoryAmount - 8);
+                    theoryAmount = arrOfNumbers[j];
+                }
+                else if (i == 12 && getA.size() > 0) {
+                    cell.setCellValue(getA.size());
+                    theoryAmount = arrOfNumbers[j];
+                }
+                else {
+                    cell.setCellValue(theoryAmount);
+                    theoryAmount = arrOfNumbers[j];
+                }
+            }
+
+            from += 52;
+            to += 52;
             rowIndex++;
         }
     }
