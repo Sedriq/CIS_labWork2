@@ -37,11 +37,11 @@ public class DBManager {
 	// ======== QUERIES ==============
 	
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM \"user\" WHERE name=?";
-	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM \"user\" WHERE id=?";
-	private static final String SQL_INSERT_USER="INSERT INTO \"user\"(name, email, password, authority_id) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE \"user\" SET name=?,email=?,password=?,authority_id=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM \"user\" WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO user(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM user WHERE name=?";
 
 	//DEPARTMENT
 	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO department(name) VALUES (?)";
@@ -59,6 +59,14 @@ public class DBManager {
 	private static final String SQL_INSERT_SPECIALITY="INSERT INTO speciality(name) VALUES (?)";
 	private static final String SQL_GET_ALL_SPECIALTIES = "SELECT * FROM speciality";
 	//===============================
+
+	// SUBJECTS
+	public static final String SQL_GET_SUBJECTS_BY_TYPE = "SELECT * FROM subjects WHERE type = ?";
+	public static final String SQL_GET_ALL_SUBJECTS = "SELECT * FROM subjects";
+	public static final String SQL_INSETR_SUBJECT = "INSERT INTO subjects(name, type, department_name) VALUES (?,?,?)";
+	public static final String SQL_UPDATE_SUBJECT = "UPDATE subjects SET name = ?, type = ?, department name = ?, where id = ?";
+
+
 
 	private DBManager() {
 		try {
@@ -539,11 +547,19 @@ public class DBManager {
     }
     
     private Department getDepartment(ResultSet rs) throws SQLException {
-        Department ins = new Department();
-        ins.setId(rs.getLong(Fields.ID));
-        ins.setName(rs.getString(Fields.NAME));
-        return ins;
-    }
+		Department ins = new Department();
+		ins.setId(rs.getLong(Fields.ID));
+		ins.setName(rs.getString(Fields.NAME));
+		return ins;
+	}
+
+	private Subject getSubject(ResultSet rs) throws SQLException{
+		Subjects ins = new Subjects();
+		ins.setName(rs.getString(Fienls.NAME));
+		ins.setType(rs.getInt(Fields.TYPE));
+		ins.setDepartment_name(rs.getInt(Fields.DEPARTMENT_NAME));
+		return ins;
+	}
 
     private Specialty getSpecialty(ResultSet rs) throws SQLException {
         Specialty ins = new Specialty();
@@ -640,5 +656,27 @@ public class DBManager {
 			close(con, st, rs);
 		}
 		return department;
+	}
+
+	public List<Subjects> getSubjectsByType(int type){
+		List<Subjects> subjects = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try{
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_SUBJECTS_BY_TYPE);
+			st.setInt(1, type);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				department.add(getSubject(rs));
+			}
+			con.commit();
+		}catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return subjects;
 	}
 }

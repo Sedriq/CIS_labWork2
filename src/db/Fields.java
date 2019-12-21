@@ -23,6 +23,8 @@ public final class Fields {
 	public static final String AUTHORITY_ID="authority_id";
 	public static final String POSITION_ID="position_id";
 	public static final String STATUS="status";
+	public static final String TYPE = "type";
+	public static final String DEPARTMENT_NAME = "department_name";
 	
 
 }
