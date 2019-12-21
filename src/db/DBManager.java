@@ -46,6 +46,10 @@ public class DBManager {
 	//DEPARTMENT
 	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO department(name) VALUES (?)";
 	private static final String SQL_GET_ALL_DEPARTMENTS = "SELECT * FROM department";
+	private static final String SQL_DELETE_DEPARTMENT ="DELETE FROM department where id = ?";
+	private static final String SQL_GET_DEPARTMENT_BY_NAME = "SELECT * FROM department WHERE name = ?";
+	private static final String SQL_UPDATE_DEPARTMENT ="UPDATE department SET name = ? where id = ?";
+
 
 	//SCIENCE_TYPE
 	private static final String SQL_INSERT_SCIENCE_TYPE="INSERT INTO science_type(name) VALUES (?)";
@@ -58,7 +62,7 @@ public class DBManager {
 
 	private DBManager() {
 		try {
-			Class.forName("org.postgresql.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -213,7 +217,44 @@ public class DBManager {
 		}
 		return true;
 	}
-		/**
+
+
+	public boolean updateDepartment(String newName,Department department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_UPDATE_DEPARTMENT);
+			st.setString(1, newName);
+			st.setLong(2, department.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	public boolean insertDepartment(String department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_INSERT_DEPARTMENT);
+			st.setString(1, department);
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+	/**
 	 * Updates `user` table row in DB.
 	 * 
 	 * @param user - user to update.
@@ -263,6 +304,24 @@ public class DBManager {
 		return true;
 	}
 
+	public boolean deleteDepartment(Department department){
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_DELETE_DEPARTMENT);
+			st.setLong(1, department.getId());
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st);
+		}
+		return true;
+	}
+
+
 	/**
 	 * Extracts data from result set and fills user entity by it.
 	 * 
@@ -300,7 +359,7 @@ public class DBManager {
         }
         return departments;
     }
-	
+
 	public List<Specialty> getAllSpecialties() {
         List<Specialty> specialties = new ArrayList<>();
         Connection con = null;
@@ -321,7 +380,7 @@ public class DBManager {
         }
         return specialties;
     }
-	
+
 	public List<ScienceType> getAllScienceTypes() {
         List<ScienceType> scienceTypes = new ArrayList<>();
         Connection con = null;
@@ -342,7 +401,7 @@ public class DBManager {
         }
         return scienceTypes;
     }
-	
+
 	//========== TEACHER =============
 	
 	/**
@@ -485,14 +544,14 @@ public class DBManager {
         ins.setName(rs.getString(Fields.NAME));
         return ins;
     }
-    
+
     private Specialty getSpecialty(ResultSet rs) throws SQLException {
         Specialty ins = new Specialty();
         ins.setId(rs.getLong(Fields.ID));
         ins.setName(rs.getString(Fields.NAME));
         return ins;
     }
-    
+
     private ScienceType getScienceType(ResultSet rs) throws SQLException {
         ScienceType ins = new ScienceType();
         ins.setId(rs.getLong(Fields.ID));
@@ -514,5 +573,72 @@ public class DBManager {
 
 	public void exportInExcel() throws IOException {
 		ex.exportDataInExcel();
+	}
+
+
+
+	public Department getDepartmentById(long id) {
+		Department department = null;
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_ALL_DEPARTMENTS);
+			st.setLong(1, id);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				department = getDepartment(rs);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return department;
+	}
+
+	public Department getDepartmentByName(String name) {
+		Department department = null;
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_DEPARTMENT_BY_NAME);
+			st.setString(1, name);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				department = getDepartment(rs);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return department;
+	}
+
+	public List<Department> getDepartment() {
+		List<Department> department = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			con = getConnection();
+			st = con.prepareStatement(SQL_GET_ALL_DEPARTMENTS);
+			rs = st.executeQuery();
+			while (rs.next()) {
+				department.add(getDepartment(rs));
+			}
+			con.commit();
+		} catch (SQLException e) {
+			rollback(con);
+		} finally {
+			close(con, st, rs);
+		}
+		return department;
 	}
 }
