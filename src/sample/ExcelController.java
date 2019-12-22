@@ -17,6 +17,10 @@ import java.util.Arrays;
 public class ExcelController {
     String data[] = null;
 
+    public String[] getData() {
+        return data;
+    }
+    
     public void importDataFromExcel() throws IOException, SQLException {
         readFile();
     }

@@ -553,9 +553,9 @@ public class DBManager {
 		return ins;
 	}
 
-	private Subject getSubject(ResultSet rs) throws SQLException{
+	private Subjects getSubject(ResultSet rs) throws SQLException{
 		Subjects ins = new Subjects();
-		ins.setName(rs.getString(Fienls.NAME));
+		ins.setName(rs.getString(Fields.NAME));
 		ins.setType(rs.getInt(Fields.TYPE));
 		ins.setDepartment_name(rs.getInt(Fields.DEPARTMENT_NAME));
 		return ins;
@@ -583,6 +583,11 @@ public class DBManager {
 	}
 
 	ExcelController ex = new ExcelController();
+	
+	public ExcelController getExcelController() {
+	    return ex;
+	}
+	
 	public void importFromExcel() throws IOException, SQLException {
 		ex.importDataFromExcel();
 	}
@@ -669,7 +674,7 @@ public class DBManager {
 			st.setInt(1, type);
 			rs = st.executeQuery();
 			while (rs.next()) {
-				department.add(getSubject(rs));
+			    subjects.add(getSubject(rs));
 			}
 			con.commit();
 		}catch (SQLException e) {
