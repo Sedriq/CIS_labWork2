@@ -11,13 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.entity.*;
-import javafx.scene.control.Alert;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import sample.ExcelController;
 
 /**
@@ -30,18 +23,19 @@ public class DBManager {
 
 	private FileInputStream fis;
 	private static DBManager instance;
+
 	private String url = "jdbc:postgresql://localhost:5432/postgres";
 	private String login = "postgres";
 	private String pass = "admin";
 
 	// ======== QUERIES ==============
-	
+
 	//USER
-	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM user WHERE name=?";
-	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM user WHERE id=?";
-	private static final String SQL_INSERT_USER="INSERT INTO user(name, email, password, authority_id) VALUES (?,?,?,?)";
-	private static final String SQL_UPDATE_USER="UPDATE user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
-	private static final String SQL_DELETE_USER="DELETE FROM user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_LOGIN = "SELECT * FROM public.user WHERE name=?";
+	private static final String SQL_FIND_USER_BY_ID = "SELECT * FROM public.user WHERE id=?";
+	private static final String SQL_INSERT_USER="INSERT INTO public.user(name, email, password, authority_id) VALUES (?,?,?,?)";
+	private static final String SQL_UPDATE_USER="UPDATE public.user SET name=?,email=?,password=?,authority_id=? WHERE id=?";
+	private static final String SQL_DELETE_USER="DELETE FROM public.user WHERE name=?";
 
 	//DEPARTMENT
 	private static final String SQL_INSERT_DEPARTMENT="INSERT INTO department(name) VALUES (?)";
@@ -70,7 +64,7 @@ public class DBManager {
 
 	private DBManager() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -606,7 +600,7 @@ public class DBManager {
 		try {
 			con = getConnection();
 			st = con.prepareStatement(SQL_GET_ALL_DEPARTMENTS);
-			st.setLong(1, id);
+			//st.setLong(1, id);
 			rs = st.executeQuery();
 			if (rs.next()) {
 				department = getDepartment(rs);
@@ -663,25 +657,26 @@ public class DBManager {
 		return department;
 	}
 
-	public List<Subjects> getSubjectsByType(int type){
-		List<Subjects> subjects = new ArrayList<>();
-		Connection con = null;
-		PreparedStatement st = null;
-		ResultSet rs = null;
-		try{
-			con = getConnection();
-			st = con.prepareStatement(SQL_GET_SUBJECTS_BY_TYPE);
-			st.setInt(1, type);
-			rs = st.executeQuery();
-			while (rs.next()) {
-			    subjects.add(getSubject(rs));
-			}
-			con.commit();
-		}catch (SQLException e) {
-			rollback(con);
-		} finally {
-			close(con, st, rs);
-		}
-		return subjects;
-	}
+
+//	public List<Subjects> getSubjectsByType(int type){
+//		List<Subjects> subjects = new ArrayList<>();
+//		Connection con = null;
+//		PreparedStatement st = null;
+//		ResultSet rs = null;
+//		try{
+//			con = getConnection();
+//			st = con.prepareStatement(SQL_GET_SUBJECTS_BY_TYPE);
+//			st.setInt(1, type);
+//			rs = st.executeQuery();
+//			while (rs.next()) {
+//				department.add(getSubject(rs));
+//			}
+//			con.commit();
+//		} catch (SQLException e) {
+//			rollback(con);
+//		} finally {
+//			close(con, st, rs);
+//		}
+//		return subjects;
+//	}
 }

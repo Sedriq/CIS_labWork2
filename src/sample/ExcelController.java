@@ -1,10 +1,12 @@
 package sample;
 
+import com.sun.org.apache.xpath.internal.operations.Variable;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,6 +18,7 @@ import java.util.Arrays;
 
 public class ExcelController {
     String data[] = null;
+    String columnData[] = new String[70 * 32];
 
     public String[] getData() {
         return data;
@@ -34,8 +37,11 @@ public class ExcelController {
 
             HSSFWorkbook wb = new HSSFWorkbook(fis);
             HSSFSheet sheet = wb.getSheetAt(0);
-            addDataInExcel(sheet);
+            HSSFSheet sheet2 = wb.getSheetAt(1);
+
+            addScheduleInExcel(sheet);
             addHoursInExcel(sheet);
+            addSubjectsInExcel(sheet2);
 
             fis.close();
 
@@ -50,7 +56,7 @@ public class ExcelController {
         }
     }
 
-    private void readFile() throws IOException, SQLException {
+    private void readFile() throws IOException {
         Stage stage = new Stage();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -66,20 +72,56 @@ public class ExcelController {
             if (extension.equals("xls")) {
                 HSSFWorkbook wb = new HSSFWorkbook(fis);
                 HSSFSheet sheet = wb.getSheetAt(0);
+                HSSFSheet sheet2 = wb.getSheetAt(1);
+
                 data = new String[52 * 4];
-                addDataInArray(sheet);
+                addLettersInArray(sheet);
+                getDataFromColumn(sheet2);
+
                 fis.close();
                 wb.close();
             } else {
                 XSSFWorkbook wb = new XSSFWorkbook(fis);
                 XSSFSheet sheet = wb.getSheetAt(0);
+                XSSFSheet sheet2 = wb.getSheetAt(1);
+
                 data = new String[52 * 4];
-                addDataInArray(sheet);
+                addLettersInArray(sheet);
+                getDataFromColumn(sheet2);
+
                 fis.close();
                 wb.close();
             }
             alertInfo("File successfully opened!");
         }
+    }
+
+    private void getDataFromColumn(Sheet sheet) {
+        int columnNumFromSheet = 77, cellNumFromSheet = 11;
+        int cellNum = 2, j = 0;
+
+        while (cellNum <= cellNumFromSheet) {
+            int rowIndex = 9;
+            while (rowIndex <= columnNumFromSheet) {
+                Row row = sheet.getRow(rowIndex);
+
+                addColumnInArray(row, cellNum, j);
+
+                j++;
+                rowIndex++;
+            }
+            cellNum++;
+        }
+    }
+
+    private void addColumnInArray(Row row, int i, int j) {
+        Cell cell = row.getCell(i);
+        CellType type = cell.getCellType();
+
+        if (type == CellType.NUMERIC)
+            columnData[j] = String.valueOf(cell.getNumericCellValue());
+        else
+            columnData[j] = cell.getStringCellValue();
     }
 
     private static String fileExtension(File file) {
@@ -90,7 +132,24 @@ public class ExcelController {
             return "";
     }
 
-    private  void addDataInArray(Sheet sheet) {
+    private void addSubjectsInExcel(Sheet sheet) {
+        int columnNumFromSheet = 80, cellNumFromSheet = 11;
+        int cellNum = 2, j = 0;
+
+        while (cellNum <= cellNumFromSheet) {
+            int rowIndex = 11;
+            while (rowIndex <= columnNumFromSheet) {
+                Row row = sheet.getRow(rowIndex);
+                Cell cell = row.getCell(cellNum);
+                cell.setCellValue(columnData[j]);
+                j++;
+                rowIndex++;
+            }
+            cellNum++;
+        }
+     }
+
+    private  void addLettersInArray(Sheet sheet) {
         int rowIndex = 15;
         int j = 0;
         while (rowIndex <= 18) {
@@ -158,7 +217,7 @@ public class ExcelController {
         }
     }
 
-    private  void addDataInExcel(Sheet sheet) {
+    private  void addScheduleInExcel(Sheet sheet) {
         int rowIndex = 24;
         int j = 0;
         while (rowIndex <= 27) {
