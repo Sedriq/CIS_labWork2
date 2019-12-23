@@ -577,6 +577,11 @@ public class DBManager {
 	}
 
 	ExcelController ex = new ExcelController();
+	
+	public ExcelController getExcelController() {
+	    return ex;
+	}
+	
 	public void importFromExcel() throws IOException, SQLException {
 		ex.importDataFromExcel();
 	}
@@ -651,6 +656,7 @@ public class DBManager {
 		}
 		return department;
 	}
+
 
 //	public List<Subjects> getSubjectsByType(int type){
 //		List<Subjects> subjects = new ArrayList<>();

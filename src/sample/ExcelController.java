@@ -20,6 +20,10 @@ public class ExcelController {
     String data[] = null;
     String columnData[] = new String[70 * 32];
 
+    public String[] getData() {
+        return data;
+    }
+    
     public void importDataFromExcel() throws IOException, SQLException {
         readFile();
     }
